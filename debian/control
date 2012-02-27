@@ -1,0 +1,21 @@
+Source: sensor-framework
+Section: misc
+Priority: extra
+Maintainer: Jonghoon Han <jonghoon.han@samsung.com>, Juhyun Kim <jh8212.kim@samsung.com>, Taesoo Jun <steve.jun@samsung.com>
+Build-Depends: libsf-common-dev, libslp-setting-dev
+Standards-Version: 0.1.0
+Homepage: N/A
+
+Package: sensor-framework
+Section: misc
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libsf-common-0
+Description: Sensor framework
+ Sensor framework
+
+Package: sensor-framework-dbg
+Section: debug
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, sensor-framework(= ${Source-Version})
+Description:Sensor server debug for sensor framework(unstripped)
+ Easy Sensor server for SLP(not recommended)

@@ -1,0 +1,52 @@
+[accel_datastream]
+multi_stream=disable
+filter_input=accel_sim_filter, accel_sim_filter, accel_sim_sensor
+processor_input=accel_sim_processor, accel_sim_processor, accel_sim_filter
+version=1
+id=2211
+override=yes
+disable=no
+
+[geomag_datastream]
+multi_stream=disable
+filter_input=geo_sim_filter, geo_sim_filter, geo_sim_sensor
+processor_input=geo_sim_processor, geo_sim_processor, geo_sim_filter
+version=1
+id=2212
+override=yes
+disable=no
+
+[lumin_datastream]
+multi_stream=disable
+filter_input=light_sim_filter, light_sim_filter, light_sim_sensor
+processor_input=light_sim_processor, light_sim_processor, light_sim_filter
+version=1
+id=2213
+override=yes
+disable=no
+
+[proxi_datastream]
+multi_stream=disable
+filter_input=proxi_sim_filter, proxi_sim_filter, proxi_sim_sensor
+processor_input=proxi_sim_processor, proxi_sim_processor, proxi_sim_filter
+version=1
+id=2214
+override=yes
+disable=no
+
+[motion_datastream]
+multi_stream=disable
+filter_input=motion_filter, motion_filter, accel_sim_sensor, gyro_sim_sensor
+processor_input=motion_sim_processor, motion_sim_processor, motion_filter
+version=1
+id=2209
+override=yes
+disable=no
+
+[gyro_datastream]
+multi_stream=disable
+processor_input=gyro_sim_processor, gyro_sim_processor, gyro_sim_sensor
+version=1
+id=2210
+override=yes
+disable=no
