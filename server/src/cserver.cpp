@@ -69,7 +69,7 @@
 #include <resource_str.h>
 
 #include <glib.h>
-
+#include <vconf.h>
 
 cserver::cserver()
 {
@@ -819,12 +819,14 @@ void *cserver::cmd_get_property(void *cmd_item, void *data)
 		
 	base_property_struct return_base_property;
 
+	memset(&return_base_property, '\0', sizeof(return_base_property));
+
 	if (arg->worker->state() != cipc_worker::START) {
 		ERR("Client disconnected (%s)\n",__FUNCTION__);
 		return (void*)NULL;
 	}
 
-	DBG("CMD_SET_VALUE  Handler invoked\n");
+	DBG("CMD_GET_PROPERTY Handler invoked\n");
 
 	payload = (cmd_get_property_t*)packet->data();
 	get_property_level =  payload->get_level;
@@ -839,15 +841,13 @@ void *cserver::cmd_get_property(void *cmd_item, void *data)
 		cdata_stream *data_stream;
 		data_stream = (cdata_stream*)ctx->module;
 
-		if ( (get_property_level & 0xFFFF) == 1 ) {			
-			get_property_size = sizeof(base_property_struct);
-			state = data_stream->get_property(get_property_level, (void*)&return_base_property);
-			if ( state != 0 ) {
-				ERR("data_stream get_property fail");
-				goto out;
-			}
-			return_property_struct = (void*)&return_base_property;
+		get_property_size = sizeof(base_property_struct);
+		state = data_stream->get_property(get_property_level, (void*)&return_base_property);
+		if ( state != 0 ) {
+			ERR("data_stream get_property fail");
+			goto out;
 		}
+		return_property_struct = (void*)&return_base_property;
 	}
 
 out:
@@ -1259,6 +1259,9 @@ void cserver::sf_main_loop(void)
 	ipc->set_worker(cb_ipc_start, cb_ipc_worker, cb_ipc_stop);
 	ipc->wait_for_client();
         
+	vconf_set_int ("memory/hibernation/sfsvc_ready", 1);
+
+
 	g_main_loop_run(mainloop);
     g_main_loop_unref(mainloop);	
 	

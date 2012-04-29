@@ -72,7 +72,6 @@
 
 #include <resource_str.h>
 
-#include <vconf.h>
 
 #if !defined(PATH_MAX)
 #define PATH_MAX 256
@@ -316,8 +315,6 @@ int main(int argc, char *argv[])
 		ERR("Failed to build a data stream, missing configurations?\n");
 		return -1;
 	}
-
-	vconf_set_int ("memory/hibernation/sfsvc_ready", 1);
 
 	server.sf_main_loop();
 

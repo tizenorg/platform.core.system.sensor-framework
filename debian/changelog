@@ -1,3 +1,11 @@
+sensor-framework (0.2.5-47) unstable; urgency=low
+
+  * version sync
+  * Git: 165.213.180.114:/pkgs/s/sensor-framework
+  * Tag: sensor-framework_0.2.5-47
+
+ -- JuHyun Kim <jh8212.kim@samsung.com>  Fri, 13 Apr 2012 09:37:36 +0900
+
 sensor-framework (0.2.5-37) unstable; urgency=low
 
   * version sync

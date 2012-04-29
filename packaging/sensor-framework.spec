@@ -1,6 +1,6 @@
 Name:       sensor-framework
 Summary:    Sensor framework
-Version:	0.2.5
+Version: 0.2.5
 Release:    1
 Group:      TO_BE/FILLED_IN
 License:    LGPL
@@ -27,13 +27,6 @@ make %{?jobs:-j%jobs}
 %make_install
 
 %post 
-mkdir -p /etc/rc.d/rc3.d/
-mkdir -p /etc/rc.d/rc4.d/
-ln -s ../init.d/sfsvc /etc/rc.d/rc3.d/S40sfsvc
-ln -s ../init.d/sfsvc /etc/rc.d/rc4.d/S40sfsvc
-
-
-
 vconftool set -t int memory/sensor/10001 0 -i
 vconftool set -t int memory/sensor/10002 0 -i
 vconftool set -t int memory/sensor/10004 0 -i
@@ -54,7 +47,17 @@ vconftool set -t int memory/sensor/800040 0 -i
 vconftool set -t int memory/sensor/80001 0 -i
 vconftool set -t int memory/sensor/80002 0 -i
 
+mkdir -p /etc/rc.d/rc3.d
+mkdir -p /etc/rc.d/rc4.d
+ln -s /etc/rc.d/init.d/sfsvc /etc/rc.d/rc3.d/S40sfsvc
+ln -s /etc/rc.d/init.d/sfsvc /etc/rc.d/rc4.d/S40sfsvc
+
+%postun
+rm -f /etc/rc.d/rc3.d/S40sfsvc
+rm -f /etc/rc.d/rc4.d/S40sfsvc
+
 %files
+%defattr(-,root,root,-)
 /usr/bin/sf_server
 %{_sysconfdir}/rc.d/init.d/sfsvc
 %attr(0644,root,root)/usr/etc/sf_data_stream.conf
