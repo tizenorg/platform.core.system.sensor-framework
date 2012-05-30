@@ -5,6 +5,7 @@ Release:    1
 Group:      TO_BE/FILLED_IN
 License:    LGPL
 Source0:    %{name}-%{version}.tar.gz
+Source1001: packaging/sensor-framework.manifest 
 
 Requires(post): /usr/bin/vconftool
 
@@ -19,6 +20,7 @@ Sensor framework
 %setup -q
 
 %build
+cp %{SOURCE1001} .
 cmake . -DCMAKE_INSTALL_PREFIX=/usr
 
 make %{?jobs:-j%jobs}
@@ -57,6 +59,7 @@ rm -f /etc/rc.d/rc3.d/S40sfsvc
 rm -f /etc/rc.d/rc4.d/S40sfsvc
 
 %files
+%manifest sensor-framework.manifest
 %defattr(-,root,root,-)
 /usr/bin/sf_server
 %{_sysconfdir}/rc.d/init.d/sfsvc
