@@ -1,3 +1,6 @@
+* Mon Jul 09 2012 Karol Lewandowski <k.lewandowsk@samsung.com> c964fd1
+- Use 'simple' service type.
+
 * Mon Jun 25 2012 Patrick McCarty <patrick.mccarty@linux.intel.com> - 0.2.5
 - Add systemd service file
 - Create initscript symlinks in %install instead of %post
