@@ -30,9 +30,9 @@ make %{?jobs:-j%jobs}
 %install
 %make_install
 
-mkdir -p %{buildroot}%{_libdir}/systemd/user/tizen-middleware.target.wants
-install -m 0644 %SOURCE1 %{buildroot}%{_libdir}/systemd/user/
-ln -s ../sensor-framework.service %{buildroot}%{_libdir}/systemd/user/tizen-middleware.target.wants/sensor-framework.service
+mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
+install -m 0644 %SOURCE1 %{buildroot}%{_libdir}/systemd/system/
+ln -s ../sensor-framework.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/sensor-framework.service
 
 # FIXME: remove initscripts after we start using systemd
 mkdir -p %{buildroot}%{_sysconfdir}/rc.d/rc3.d
@@ -73,6 +73,6 @@ vconftool set -t int memory/sensor/80002 0 -i
 %attr(0644,root,root)/usr/etc/sf_filter.conf
 %attr(0644,root,root)/usr/etc/sf_processor.conf
 %attr(0644,root,root)/usr/etc/sf_sensor.conf
-%{_libdir}/systemd/user/sensor-framework.service
-%{_libdir}/systemd/user/tizen-middleware.target.wants/sensor-framework.service
+%{_libdir}/systemd/system/sensor-framework.service
+%{_libdir}/systemd/system/multi-user.target.wants/sensor-framework.service
 
