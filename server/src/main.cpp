@@ -82,6 +82,109 @@ extern int optind, opterr, optopt;
 
 static cserver server;
 
+#define SF_SERVER_STATE_LOG_FILE        "/opt/share/debug/sf_server_log"
+#define SF_SERVER_STATE_LOG_DIR     "/opt/share/debug"
+
+static struct sigaction sf_act_quit;
+static struct sigaction sf_oldact_quit;
+static struct sigaction sf_act_pipe;
+static struct sigaction sf_oldact_pipe;
+
+static void sig_pipe_handler(int signo)
+{
+	int fd;
+	char buf[255];
+	time_t now_time;
+
+	if(signo==SIGPIPE)
+	{
+		time(&now_time);
+
+		if ( access (SF_SERVER_STATE_LOG_DIR, F_OK) <	0 ) {
+			mkdir(SF_SERVER_STATE_LOG_DIR, 0755);
+		}
+
+		fd = open(SF_SERVER_STATE_LOG_FILE,	O_WRONLY|O_CREAT|O_APPEND, 0755);
+
+		if (fd != -1) {
+			snprintf(buf,255, "\nsf_sever_sig_pipe_log now-time : %ld (s)\n\n",(long)now_time);
+			write(fd, buf, strlen(buf));
+			snprintf(buf,255, "sig_pipe event happend");
+			write(fd, buf, strlen(buf));
+		}
+		if (fd != -1) {
+			close(fd);
+		}
+	}
+
+	return;
+}
+
+static void sig_quit_handler(int signo)
+{
+	int fd;
+	char buf[255];
+	time_t now_time;
+
+
+	if( (signo==SIGTERM) || (signo==SIGQUIT) )
+	{
+		time(&now_time);
+		if ( access (SF_SERVER_STATE_LOG_DIR, F_OK) < 0 ) {
+			mkdir(SF_SERVER_STATE_LOG_DIR, 0755);
+		}
+
+		fd = open(SF_SERVER_STATE_LOG_FILE,	O_WRONLY|O_CREAT|O_APPEND, 0755);
+
+		if (fd != -1) {
+			snprintf(buf,255, "\nsf_sever_sig_quit_term_log	now-time : %ld (s)\n\n",(long)now_time);
+			write(fd, buf, strlen(buf));
+		}
+		
+		server.sf_main_loop_stop();
+		DBG("sf_main_loop_stop() called");
+	}
+
+	return;
+}
+
+static int sig_act_init(void)
+{
+	int return_state=0;
+
+	sf_act_quit.sa_handler=sig_quit_handler;
+	sigemptyset(&sf_act_quit.sa_mask);
+	sf_act_quit.sa_flags = SA_NOCLDSTOP;
+
+	sf_act_pipe.sa_handler=sig_pipe_handler;
+	sigemptyset(&sf_act_pipe.sa_mask);
+	sf_act_pipe.sa_flags = SA_NOCLDSTOP;
+
+
+	if (sigaction(SIGTERM, &sf_act_quit, &sf_oldact_quit) < 0) {
+		ERR("error sigaction register for SIGTERM");
+		return_state = -1;
+	}
+
+	if (sigaction(SIGQUIT, &sf_act_quit, &sf_oldact_quit) < 0) {
+		ERR("error sigaction register for SIGQUIT");
+		return_state -= 1;
+	}
+
+	if (sigaction(SIGPIPE, &sf_act_pipe, &sf_oldact_pipe) < 0) {
+		ERR("error sigaction register for SIGPIPE");
+		return_state -= 1;
+	}
+
+	signal(SIGCHLD, SIG_IGN);
+	signal(SIGUSR1, SIG_IGN);
+	signal(SIGUSR2, SIG_IGN);
+
+	return return_state;
+}
+
+
+
 inline static int daemonize(void)
 {
 	pid_t pid;
@@ -315,6 +418,12 @@ int main(int argc, char *argv[])
 		ERR("Failed to build a data stream, missing configurations?\n");
 		return -1;
 	}
+
+	
+	if (sig_act_init() != 0) {
+		ERR("sig_act_init fail!!");
+	}
+
 
 	server.sf_main_loop();
 

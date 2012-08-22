@@ -70,6 +70,21 @@
 
 #include <glib.h>
 #include <vconf.h>
+#include <heynoti.h>
+
+#define POWEROFF_NOTI_NAME "power_off_start"
+#define SF_POWEROFF_VCONF "memory/private/sensor/poweroff"
+
+static GMainLoop *g_mainloop;
+static int g_poweroff_fd = -1;
+
+static void system_poweroff_cb(void *data)
+{
+	vconf_set_int(SF_POWEROFF_VCONF, 1);
+	heynoti_close(g_poweroff_fd);
+	g_poweroff_fd = -1;
+	DBG("system_poweroff_cb called");
+}
 
 cserver::cserver()
 {
@@ -77,7 +92,6 @@ cserver::cserver()
 	m_cmd_handler[CMD_HELLO]	= cmd_hello;
 	m_cmd_handler[CMD_BYEBYE]	= cmd_byebye;
 	m_cmd_handler[CMD_GET_VALUE]	= cmd_get_value;
-	m_cmd_handler[CMD_WAIT_EVENT]	= cmd_wait_event;
 	m_cmd_handler[CMD_START]	= cmd_start;
 	m_cmd_handler[CMD_STOP]		= cmd_stop;
 	m_cmd_handler[CMD_REG]		= cmd_register_event;
@@ -461,76 +475,6 @@ void *cserver::cmd_stop(void *cmd_item, void *data)
 		}
 	} else {
 		ERR("This module has no stop operation (%s)\n",__FUNCTION__);
-	}
-
-	return (void*)NULL;
-}
-
-
-
-void *cserver::cmd_wait_event(void *cmd_item, void *data)
-{
-	cmd_queue_item_t *queue_item = (cmd_queue_item_t*)cmd_item;
-	csock::thread_arg_t *arg = queue_item->arg;
-	client_ctx_t *ctx = (client_ctx_t*)arg->client_ctx;
-	cpacket *packet = queue_item->packet;
-	long return_value =0; 
-		
-	if (arg->worker->state() != cipc_worker::START) {
-		ERR("Client disconnected (%s)\n",__FUNCTION__);
-		return (void*)NULL;
-	}
-
-	DBG("CMD_WAIT_EVENT Handler invoked\n");
-
-	if ( !(ctx->module) ) {
-		ERR("Error ctx->module ptr check(%s)", __FUNCTION__);
-		goto out;
-	}
-	
-	if (ctx->module->type() == cdata_stream::SF_DATA_STREAM) {
-		cdata_stream *data_stream;
-		data_stream = (cdata_stream*)ctx->module;
-		data_stream->add_event_callback(cb_event_handler, arg, NULL);
-		DBG("Add event callback for data stream\n");
-		return (void*)NULL;
-		
-	} else if (ctx->module->type() == cprocessor_module::SF_PLUGIN_PROCESSOR) {
-		cprocessor_module *processor;
-		processor = (cprocessor_module*)ctx->module;
-		processor->add_event_callback(cb_event_handler, arg, NULL);
-		DBG("Add event callback for processor\n");
-		return (void*)NULL;
-		
-	} else if (ctx->module->type() == cfilter_module::SF_PLUGIN_FILTER) {
-		cfilter_module *filter;
-		filter = (cfilter_module*)ctx->module;
-		filter->is_data_ready(true);
-		DBG("wait to ready for data in filter\n");
-
-	} else if (ctx->module->type() == csensor_module::SF_PLUGIN_SENSOR) {
-		csensor_module *sensor;
-		sensor = (csensor_module*)ctx->module;
-		sensor->is_data_ready(true);
-		DBG("wait to ready for data in sensor\n");	
-	
-	} else {
-		return_value = -1;	//! Unknown status
-		ERR("Unsupported command for the attached module (%s)\n",__FUNCTION__);
-	}
-	
-out:
-
-	csock ipc(arg->client_handle, csock::SOCK_TCP);
-	cmd_done_t *payload;
-	ipc.set_on_close(false);
-
-	packet->set_cmd(CMD_DONE);
-	packet->set_payload_size(sizeof(cmd_done_t));
-	payload = (cmd_done_t*)packet->data();
-	payload->value = return_value;	
-	if (ipc.send(packet->packet(), packet->size()) == false) {
-		ERR("Failed to send a packet (%s)\n",__FUNCTION__);
 	}
 
 	return (void*)NULL;
@@ -1177,45 +1121,6 @@ void *cserver::cb_ipc_worker(void *data)
 
 
 
-
-	
-void *cserver::cb_event_handler(cprocessor_module *processor, void *data)
-{
-	csock::thread_arg_t *arg = (csock::thread_arg_t *)data;
-	cpacket packet(sizeof(cmd_done_t)+4);
-	cmd_done_t *payload;
-	csock ipc(arg->client_handle , csock::SOCK_TCP);
-	ipc.set_on_close(false);
-
-	DBG("Wait event handler invoked\n");
-	if (arg->worker->state() != cipc_worker::START) {
-		ERR("Client disconnected\n");
-		return (void*)NULL;
-	}
-
-	packet.set_cmd(CMD_DONE);
-	packet.set_version(PROTOCOL_VERSION);
-	packet.set_payload_size(sizeof(cmd_done_t));
-	payload = (cmd_done_t*)packet.data();
-	payload->value = arg->worker->state();
-
-	if (ipc.send(packet.packet(), packet.size()) == false) {
-		ERR("Failed to send a packet (%s)\n",__FUNCTION__);
-		return (void*)NULL;
-	}
-
-	return (void*)NULL;
-}
-
-
-
-void cserver::cb_rm_cb_data(void *cb)
-{
-	DbgPrint("nop\n");
-	return;
-}
-
-
 void cserver::command_handler(void *cmd_item, void *data)
 {
 	cmd_queue_item_t *queue_item = (cmd_queue_item_t*)cmd_item;
@@ -1242,12 +1147,20 @@ void cserver::command_handler(void *cmd_item, void *data)
 }
 
 
+void cserver::sf_main_loop_stop(void)
+{
+	if(g_mainloop)
+	{
+		g_main_loop_quit(g_mainloop);
+	}
+}
+
 void cserver::sf_main_loop(void)
 {
-	static GMainLoop *mainloop;
 	csock *ipc = NULL;
+	int fd = -1;
 
-	mainloop = g_main_loop_new(NULL, FALSE);
+	g_mainloop = g_main_loop_new(NULL, FALSE);
 	
 	try {
 		ipc = new csock((char*)STR_SF_IPC_SOCKET, csock::SOCK_TCP|csock::SOCK_WORKER, 0, 1);
@@ -1259,11 +1172,31 @@ void cserver::sf_main_loop(void)
 	ipc->set_worker(cb_ipc_start, cb_ipc_worker, cb_ipc_stop);
 	ipc->wait_for_client();
         
-	vconf_set_int ("memory/hibernation/sfsvc_ready", 1);
 
+	if((g_poweroff_fd = heynoti_init()) < 0)
+	{
+		ERR("heynoti_init FAIL\n");
+	}
 
-	g_main_loop_run(mainloop);
-    g_main_loop_unref(mainloop);	
+	if(heynoti_subscribe(g_poweroff_fd, POWEROFF_NOTI_NAME, system_poweroff_cb, NULL))
+	{
+		ERR("heynoti_subscribe fail\n");
+	}
+
+	if(heynoti_attach_handler(g_poweroff_fd))
+	{
+		ERR("heynoti_attach_handler fail\n");
+	}
+
+	fd = creat("/tmp/hibernation/sfsvc_ready", 0644);
+	if(fd != -1)
+	{
+		close(fd);
+		fd = -1;
+	}
+
+	g_main_loop_run(g_mainloop);
+    g_main_loop_unref(g_mainloop);	
 	
 	return;
 }

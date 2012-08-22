@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(sensor_framework_main CXX)
 
 include(FindPkgConfig)
-pkg_check_modules(rpkgs REQUIRED sf_common vconf)
+pkg_check_modules(rpkgs REQUIRED sf_common vconf heynoti)
 add_definitions(${rpkgs_CFLAGS})
 
 # to install pkgconfig setup file.
