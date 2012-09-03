@@ -131,6 +131,13 @@ version=1
 override=yes
 disable=no
 
+[ak8963cl_processor]
+path=/usr/lib/sensor_framework/libak8963cl_processor.so
+id=2124
+version=1
+override=yes
+disable=no
+
 [ak8975_processor]
 path=/usr/lib/sensor_framework/libak8975_processor.so
 id=2124
@@ -147,6 +154,13 @@ disable=no
 
 [ak8975cl_processor]
 path=/usr/lib/sensor_framework/libak8975cl_processor.so
+id=2125
+version=1
+override=yes
+disable=no
+
+[ak8975ck_processor]
+path=/usr/lib/sensor_framework/libak8975ck_processor.so
 id=2125
 version=1
 override=yes

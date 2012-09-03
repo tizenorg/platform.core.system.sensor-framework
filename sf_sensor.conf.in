@@ -142,6 +142,14 @@ id=1109
 version=1
 poll=90
 
+[ak8963cl_sensor]
+disable=no
+override=yes
+path=/usr/lib/sensor_framework/libak8963cl.so
+id=1108
+version=1
+poll=100
+
 [ak8975_sensor]
 disable=no
 override=yes
@@ -170,6 +178,14 @@ poll=100
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libak8975cl.so
+id=1109
+version=1
+poll=100
+
+[ak8975ck_sensor]
+disable=no
+override=yes
+path=/usr/lib/sensor_framework/libak8975ck.so
 id=1109
 version=1
 poll=100

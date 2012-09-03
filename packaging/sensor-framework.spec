@@ -1,7 +1,7 @@
 #sbs-git:slp/pkgs/s/sensor-framework sensor-framework 0.2.5 f585f766aa864c3857e93c776846771899a4fa41
 Name:       sensor-framework
 Summary:    Sensor framework
-Version: 0.2.9
+Version: 0.2.10
 Release:    1
 Group:      TO_BE/FILLED_IN
 License:    LGPL
