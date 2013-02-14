@@ -2,7 +2,11 @@
 multi_stream=disable
 filter_input=bma023_filter, bma023_filter, bma023_sensor
 processor_input=bma023_processor, bma023_processor, bma023_filter
+processor_input=bma250_processor, bma250_processor, bma250_sensor
+processor_input=bma254_processor, bma254_processor, bma254_sensor
 processor_input=kr3dm_processor, kr3dm_processor, kr3dm_sensor
+processor_input=lsm330dlc_accel_processor, lsm330dlc_accel_processor, lsm330dlc_accel_sensor
+processor_input=k2dh_processor, k2dh_processor, k2dh_sensor
 version=1
 id=2211
 override=yes
@@ -13,9 +17,15 @@ multi_stream=disable
 filter_input=ak8973b_filter, ak8973b_filter, ak8973b_sensor
 filter_input=ak8975_filter, ak8975_filter, ak8975_sensor
 filter_input=yas529_filter, yas529_filter, yas529_sensor
+processor_input=bmm050_processor, bmm050_processor, bmm050_sensor
+processor_input=yas529_processor, yas529_processor, yas529_filter, bma023_sensor
+processor_input=ak8963cl_processor, ak8963cl_processor, lsm330dlc_accel_sensor
 processor_input=ak8973b_processor, ak8973b_processor, ak8973b_filter
 processor_input=ak8975_processor, ak8975_processor, ak8975_filter, kr3dm_sensor
-processor_input=yas529_processor, yas529_processor, yas529_filter, bma023_sensor
+processor_input=ak8975c_processor, ak8975c_processor, ak8975c_sensor, bma254_sensor
+processor_input=ak8975ck_processor, ak8975ck_processor, kr3dm_sensor
+processor_input=ak8975cl_processor, ak8975cl_processor, lsm330dlc_accel_sensor
+processor_input=hscdtd008a_processor, hscdtd008a_processor, hscdtd008a_sensor
 version=1
 id=2212
 override=yes
@@ -29,7 +39,9 @@ filter_input=tmd2711ambi_filter, tmd2711ambi_filter, tmd2711ambi_sensor
 processor_input=gp2ap002ambi_processor, gp2ap002ambi_processor, gp2ap002ambi_filter
 processor_input=gp2ap020ambi_processor, gp2ap020ambi_processor, gp2ap020ambi_sensor
 processor_input=cm3623ambi_processor, cm3623ambi_processor, cm3623ambi_filter
+processor_input=cm36651ambi_processor, cm36651ambi_processor, cm36651ambi_sensor
 processor_input=tmd2711ambi_processor, tmd2711ambi_processor, tmd2711ambi_filter
+processor_input=tmd2772ambi_processor, tmd2772ambi_processor, tmd2772ambi_sensor
 version=1
 id=2213
 override=yes
@@ -43,16 +55,19 @@ filter_input=tmd2711proxi_filter, tmd2711proxi_filter, tmd2711proxi_sensor
 processor_input=gp2ap002proxi_processor, gp2ap002proxi_processor, gp2ap002proxi_filter
 processor_input=gp2ap020proxi_processor, gp2ap020proxi_processor, gp2ap020proxi_sensor
 processor_input=cm3623proxi_processor, cm3623proxi_processor, cm3623proxi_filter
+processor_input=cm36651proxi_processor, cm36651proxi_processor, cm36651proxi_sensor
 processor_input=tmd2711proxi_processor, tmd2711proxi_processor, tmd2711proxi_filter
+processor_input=tmd2772proxi_processor, tmd2772proxi_processor, tmd2772proxi_sensor
+processor_input=px3315proxi_processor, px3315proxi_processor, px3315proxi_sensor
 version=1
 id=2214
 override=yes
 disable=no
 
 [motion_datastream]
-multi_stream=disable
-filter_input=motion_filter, motion_filter, bma023_sensor, kr3dm_sensor, l3g4200d_sensor
-processor_input=motion_processor, motion_processor, motion_filter
+multi_stream=enable
+filter_input=motion_filter, motion_filter, bma023_sensor, kr3dm_sensor,lsm330dlc_accel_sensor, l3g4200d_sensor, lsm330dlc_gyro_sensor, gp2ap020proxi_sensor, cm3623proxi_sensor, cm36651proxi_sensor
+processor_input=motion_processor, motion_processor, motion_filter, lsm330dlc_accel_sensor
 version=1
 id=2209
 override=yes
@@ -63,7 +78,25 @@ multi_stream=disable
 filter_input=mpu3050_filter, mpu3050_filter
 processor_input=mpu3050_processor, mpu3050_processor, mpu3050_filter, bma023_sensor
 processor_input=l3g4200d_processor, l3g4200d_processor, l3g4200d_sensor
+processor_input=lsm330dlc_gyro_processor, lsm330dlc_gyro_processor, lsm330dlc_gyro_sensor
 version=1
 id=2210
 override=yes
 disable=no
+
+[barometer_datastream]
+multi_stream=disable
+processor_input=lps331ap_processor, lps331ap_processor, lps331ap_sensor
+version=1
+id=2210
+override=yes
+disable=no
+
+[fusion_datastream]
+multi_stream=esable
+processor_input=fusion_processor, fusion_processor, lsm330dlc_accel_sensor, lsm330dlc_gyro_sensor, ak8975cl_sensor
+version=1
+id=2210
+override=yes
+disable=no
+

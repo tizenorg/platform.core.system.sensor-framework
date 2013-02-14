@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(sensor_framework_main CXX)
 
 include(FindPkgConfig)
-pkg_check_modules(rpkgs REQUIRED sf_common vconf)
+pkg_check_modules(rpkgs REQUIRED sf_common vconf heynoti)
 add_definitions(${rpkgs_CFLAGS})
 
 # to install pkgconfig setup file.
@@ -18,7 +18,7 @@ set(PROJECT_RELEASE_VERSION "1")
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 add_definitions(-Wall -O3 -omit-frame-pointer) 
-add_definitions(-Wall -g -D_DEBUG)
+#add_definitions(-Wall -g -D_DEBUG)
 
 FIND_PROGRAM(UNAME NAMES uname)
 EXEC_PROGRAM("${UNAME}" ARGS "-m" OUTPUT_VARIABLE "ARCH")
