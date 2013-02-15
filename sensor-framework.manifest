@@ -1,0 +1,16 @@
+<manifest>
+	<define>
+		<domain name="sensor-framework" />
+		<provide>
+			<label name="sensor-framework::server" />
+		</provide>
+	</define>
+	<request>
+		<domain name="sensor-framework" />
+	</request>
+	<assign>
+		<filesystem path="/etc/rc.d/init.d/sfsvc" label="_" exec_label="none" />
+		<filesystem path="/etc/rc.d/rc3.d/S40sfsvc" label="_" exec_label="none" />
+		<filesystem path="/etc/rc.d/rc4.d/S40sfsvc" label="_" exec_label="none" />
+	</assign>
+</manifest>

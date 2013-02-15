@@ -1,0 +1,20 @@
+* Tue Jan 15 2013 Telle-Tiia Pitkänen <telle-tiia.pitkanen@ixonos.com> submit/tizen_2.0/20130109.005631@b28fbf6
+- PR3 required changes added.
+
+- code sync
+- Add sensor information in configure file
+- Code sync
+- code sync
+- merge systemd code
+- update configure file
+
+* Wed Aug 15 2012 Chris E Ferron <chris.e.ferron@linux.intel.com> 8b5e9a1
+- Due to blockages, change the power-manager from being launched as a user mode to a system mode service
+
+* Mon Jul 09 2012 Karol Lewandowski <k.lewandowsk@samsung.com> c964fd1
+- Use 'simple' service type.
+
+* Mon Jun 25 2012 Patrick McCarty <patrick.mccarty@linux.intel.com> - 0.2.5
+- Add systemd service file
+- Create initscript symlinks in %install instead of %post
+

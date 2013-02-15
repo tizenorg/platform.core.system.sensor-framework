@@ -142,7 +142,10 @@ cdata_stream::~cdata_stream()
 		filter = next_filter;
 	}
 
-	if (m_name) free(m_name);
+	if (m_name) {
+		free(m_name);
+		m_name = NULL;
+	}
 }
 
 
