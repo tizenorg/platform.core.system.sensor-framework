@@ -1,0 +1,11 @@
+
+[Unit]
+Description=Start the sensor framework
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/sf_server -s /usr/etc/sf_sensor.conf -f /usr/etc/sf_filter.conf -p /usr/etc/sf_processor.conf -d /usr/etc/sf_data_stream.conf
+
+[Install]
+WantedBy=multi-user.target
+

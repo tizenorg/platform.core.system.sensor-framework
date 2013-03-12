@@ -35,6 +35,7 @@ public:
 
 	
 	void sf_main_loop(void);
+	void sf_main_loop_stop(void);
 
 private:
 
@@ -56,8 +57,6 @@ private:
 	static void *cmd_byebye(void *cmd_item, void *data);
 	//! Get value
 	static void *cmd_get_value(void *cmd_item, void *data);
-	//! Wait event
-	static void *cmd_wait_event(void *cmd_item, void *data);
 	//! Start
 	static void *cmd_start(void *cmd_item, void *data);
 	//! Stop
@@ -70,10 +69,6 @@ private:
 	static void *cmd_get_property(void *cmd_item, void *data);
 	//! Get struct_data
 	static void *cmd_get_struct(void *cmd_item, void *data);
-
-
-	static void *cb_event_handler(cprocessor_module *, void *);
-	static void cb_rm_cb_data(void *);
 
 
 	cmd_func_t m_cmd_handler[CMD_LAST];
