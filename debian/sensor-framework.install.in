@@ -1,3 +1,0 @@
-@PREFIX@/bin/*
-@PREFIX@/etc/*
-/etc/rc.d/*
