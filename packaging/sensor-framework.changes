@@ -1,3 +1,13 @@
+* Tue Feb 19 2013 Telle-Tiia Pitkänen <telle-tiia.pitkanen@ixonos.com> accepted/trunk/20130131.000522@e0551a5
+- PR3 required changes added.
+- Add assign tag in manifest file
+- Add vconf key for no move event
+- fix License in spec file
+- fix license in spec file (LGPL -> TO_BE)
+- reupload for SR
+- Add vconf key for tilt, panning browse event
+- Add license
+
 * Tue Jan 15 2013 Telle-Tiia Pitkänen <telle-tiia.pitkanen@ixonos.com> submit/tizen_2.0/20130109.005631@b28fbf6
 - PR3 required changes added.
 
