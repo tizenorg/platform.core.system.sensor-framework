@@ -1,46 +1,46 @@
-[bma023_filter]
+[accel_filter]
 path=/usr/lib/sensor_framework/libbma023_filter.so
 id=1223
 version=1
 disable=no
 override=yes
 
-[ak8973b_filter]
+[geo_filter]
 path=/usr/lib/sensor_framework/libak8973b_filter.so
 id=1224
 version=1
 disable=no
 override=yes
 
-[yas529_filter]
+[geo_filter]
 path=/usr/lib/sensor_framework/libyas529_filter.so
 id=1225
 version=1
 disable=no
 override=yes
 
-[gp2ap002ambi_filter]
+[ambi_filter]
 path=/usr/lib/sensor_framework/libgp2ap002ambi_filter.so
 id=1226
 version=1
 disable=no
 override=yes
 
-[gp2ap002proxi_filter]
+[proxi_filter]
 path=/usr/lib/sensor_framework/libgp2ap002proxi_filter.so
 id=1227
 version=1
 disable=no
 override=yes
 
-[cm3623ambi_filter]
+[ambi_filter]
 path=/usr/lib/sensor_framework/libcm3623ambi_filter.so
 id=1228
 version=1
 disable=no
 override=yes
 
-[cm3623proxi_filter]
+[proxi_filter]
 path=/usr/lib/sensor_framework/libcm3623proxi_filter.so
 id=1229
 version=1
@@ -54,21 +54,21 @@ version=1
 disable=no
 override=yes
 
-[tmd2711ambi_filter]
+[ambi_filter]
 path=/usr/lib/sensor_framework/libtmd2711ambi_filter.so
 id=1220
 version=1
 disable=no
 override=yes
 
-[tmd2711proxi_filter]
+[proxi_filter]
 path=/usr/lib/sensor_framework/libtmd2711proxi_filter.so
 id=1219
 version=1
 disable=no
 override=yes
 
-[ak8975_filter]
+[geo_filter]
 path=/usr/lib/sensor_framework/libak8975_filter.so
 id=1218
 version=1

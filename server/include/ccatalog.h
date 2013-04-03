@@ -43,6 +43,7 @@ public:
 	bool unload(void);
 
 	char *value(char *group, char *name);
+	char *value(void *handle, char *name);
 	char *value(char *group, char *name, int idx);
 	int count_of_values(char *group, char *name);
 

@@ -84,31 +84,34 @@ bool cfilter_catalog::create(char *file)
 	handle = ccatalog::iterate_init();
 	while (handle) {
 		name = ccatalog::iterate_get_name(handle);
-		handle = ccatalog::iterate_next(handle);
 		if (!name) {
 			ERR("Name is null\n");
+			handle = ccatalog::iterate_next(handle);
 			continue;
 		}
 
-		value = ccatalog::value(name, (char*)STR_DISABLE);
+		value = ccatalog::value(handle, (char*)STR_DISABLE);
 		if (value && !strcasecmp(value, STR_YES)) {
 			ERR("%s is disabled\n", name);
+			handle = ccatalog::iterate_next(handle);
 			continue;
 		}
 
-		value = ccatalog::value(name, (char*)STR_PATH);
+		value = ccatalog::value(handle, (char*)STR_PATH);
 		if (!value) {
 			ERR("Module path is not defined\n");
+			handle = ccatalog::iterate_next(handle);
 			continue;
 		}
 
 		module = cfilter_module::register_module(value, NULL, NULL);
 		if (!module) {
 			ERR("Failed to register a module %s\n", name);
+			handle = ccatalog::iterate_next(handle);
 			continue;
 		}
 
-		value = ccatalog::value(name, (char*)STR_OVERRIDE);
+		value = ccatalog::value(handle, (char*)STR_OVERRIDE);
 		if (value && !strcasecmp(value, STR_YES)) {
 			DBG("Let's override module description\n");
 
@@ -116,20 +119,21 @@ bool cfilter_catalog::create(char *file)
 				ERR("Failed to update module name\n");
 			}
 
-			value = ccatalog::value(name, (char*)STR_ID);
+			value = ccatalog::value(handle, (char*)STR_ID);
 			if (value) {
 				if (module->update_id(atoi(value)) == false) {
 					ERR("Failed to update ID\n");
 				}
 			}
 
-			value = ccatalog::value(name, (char*)STR_VERSION);
+			value = ccatalog::value(handle, (char*)STR_VERSION);
 			if (value) {
 				if (module->update_version(atoi(value)) == false) {
 					ERR("Failed to update version\n");
 				}
 			}
 		}
+		handle = ccatalog::iterate_next(handle);
 	}
 
 	DBG("Finished registeration , unload filter.conf ");

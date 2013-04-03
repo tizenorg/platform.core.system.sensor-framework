@@ -1,4 +1,4 @@
-[bma023_sensor]
+[accel_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libbma023.so
@@ -6,7 +6,7 @@ id=1114
 version=1
 poll=10
 
-[lsm330dlc_accel_sensor]
+[accel_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/liblsm330dlc_accel.so
@@ -14,7 +14,55 @@ id=1114
 version=1
 poll=200
 
-[k2dh_sensor]
+[accel_sensor]
+disable=no
+override=yes
+path=/usr/lib/sensor_framework/libmpu6000_accel.so
+id=1114
+version=1
+poll=200
+
+[gyro_sensor]
+disable=no
+override=yes
+path=/usr/lib/sensor_framework/libmpu6000_gyro.so
+id=1111
+version=1
+poll=18
+
+[ambi_sensor]
+disable=no
+override=yes
+path=/usr/lib/sensor_framework/libtmd3782ambi.so
+id=1117
+version=1
+poll=490
+
+[proxi_sensor]
+disable=no
+override=yes
+path=/usr/lib/sensor_framework/libtmd3782proxi.so
+id=1118
+version=1
+poll=90
+
+[ambi_sensor]
+disable=no
+override=yes
+path=/usr/lib/sensor_framework/libtmd27723ambi.so
+id=1117
+version=1
+poll=490
+
+[proxi_sensor]
+disable=no
+override=yes
+path=/usr/lib/sensor_framework/libtmd27723proxi.so
+id=1118
+version=1
+poll=90
+
+[accel_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libk2dh.so
@@ -22,7 +70,7 @@ id=1114
 version=1
 poll=10
 
-[lps331ap_sensor]
+[barometer_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/liblps331ap.so
@@ -30,7 +78,7 @@ id=1114
 version=1
 poll=100
 
-[ak8973b_sensor]
+[geo_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libak8973b.so
@@ -38,7 +86,7 @@ id=1115
 version=1
 poll=100
 
-[yas529_sensor]
+[geo_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libyas529.so
@@ -46,7 +94,7 @@ id=1116
 version=1
 poll=90
 
-[hscdtd008a_sensor]
+[accel_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libhscdtd008a.so
@@ -54,7 +102,7 @@ id=1116
 version=1
 poll=90
 
-[gp2ap002ambi_sensor]
+[ambi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libgp2ap002ambi.so
@@ -62,7 +110,7 @@ id=1117
 version=1
 poll=490
 
-[gp2ap002proxi_sensor]
+[proxi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libgp2ap002proxi.so
@@ -70,7 +118,7 @@ id=1118
 version=1
 poll=90
 
-[gp2ap020ambi_sensor]
+[ambi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libgp2ap020ambi.so
@@ -78,7 +126,7 @@ id=1117
 version=1
 poll=490
 
-[gp2ap020proxi_sensor]
+[proxi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libgp2ap020proxi.so
@@ -86,7 +134,7 @@ id=1118
 version=1
 poll=90
 
-[cm3623ambi_sensor]
+[ambi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libcm3623ambi.so
@@ -94,7 +142,7 @@ id=1119
 version=1
 poll=490
 
-[cm3623proxi_sensor]
+[proxi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libcm3623proxi.so
@@ -102,7 +150,7 @@ id=1113
 version=1
 poll=90
 
-[px3315proxi_sensor]
+[proxi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libpx3315proxi.so
@@ -110,7 +158,7 @@ id=1113
 version=1
 poll=90
 
-[cm36651ambi_sensor]
+[ambi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libcm36651ambi.so
@@ -118,7 +166,7 @@ id=1119
 version=1
 poll=490
 
-[cm36651proxi_sensor]
+[proxi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libcm36651proxi.so
@@ -126,7 +174,7 @@ id=1113
 version=1
 poll=90
 
-[kr3dm_sensor]
+[accel_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libkr3dm.so
@@ -134,7 +182,7 @@ id=1112
 version=1
 poll=10
 
-[l3g4200d_sensor]
+[gyro_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libl3g4200d.so
@@ -142,7 +190,7 @@ id=1111
 version=1
 poll=18
 
-[lsm330dlc_gyro_sensor]
+[gyro_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/liblsm330dlc_gyro.so
@@ -150,7 +198,7 @@ id=1111
 version=1
 poll=18
 
-[tmd2711ambi_sensor]
+[ambi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libtmd2711ambi.so
@@ -158,7 +206,7 @@ id=1110
 version=1
 poll=490
 
-[tmd2711proxi_sensor]
+[proxi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libtmd2711proxi.so
@@ -166,7 +214,7 @@ id=1109
 version=1
 poll=90
 
-[ak8963cl_sensor]
+[geo_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libak8963cl.so
@@ -174,7 +222,7 @@ id=1108
 version=1
 poll=100
 
-[ak8975_sensor]
+[geo_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libak8975.so
@@ -182,7 +230,7 @@ id=1108
 version=1
 poll=100
 
-[bmm050_sensor]
+[geo_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libbmm050.so
@@ -190,7 +238,7 @@ id=1120
 version=1
 poll=100
 
-[ak8975c_sensor]
+[geo_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libak8975c.so
@@ -198,7 +246,7 @@ id=1109
 version=1
 poll=100
 
-[ak8975cl_sensor]
+[geo_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libak8975cl.so
@@ -206,7 +254,7 @@ id=1109
 version=1
 poll=100
 
-[ak8975ck_sensor]
+[geo_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libak8975ck.so
@@ -214,7 +262,7 @@ id=1109
 version=1
 poll=100
 
-[bma250_sensor]
+[accel_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libbma250.so
@@ -222,7 +270,7 @@ id=1121
 version=1
 poll=100
 
-[bma254_sensor]
+[accel_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libbma254.so
@@ -230,7 +278,7 @@ id=1130
 version=1
 poll=100
 
-[tmd2772proxi_sensor]
+[proxi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libtmd2772proxi.so
@@ -238,7 +286,7 @@ id=1131
 version=1
 poll=100
 
-[tmd2772ambi_sensor]
+[ambi_sensor]
 disable=no
 override=yes
 path=/usr/lib/sensor_framework/libtmd2772ambi.so

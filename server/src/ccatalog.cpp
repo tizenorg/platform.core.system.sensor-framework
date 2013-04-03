@@ -296,6 +296,25 @@ char *ccatalog::value(char *group, char *name)
 	return NULL;
 }
 
+char *ccatalog::value(void *handle, char *name)
+{
+        group_t *grp = (group_t *)handle;
+
+        if (grp) {
+                desc_t *desc;
+                desc = grp->head;
+
+                while (desc) {
+                        if (!strncmp(name, desc->name, sizeof(desc->name))) {
+                                return desc->value;
+                        }
+                        desc = (desc_t*)desc->next();
+                }
+        }
+
+        return NULL;
+}
+
 char *ccatalog::value(char *group, char *name, int idx)
 {
 	group_t *grp;
@@ -351,7 +370,7 @@ int ccatalog::count_of_values(char *group, char *name)
 	}
 	return count;
 }
-									
+
 void *ccatalog::iterate_init(void)
 {
 	return (void*)m_head;
