@@ -286,7 +286,7 @@ char *ccatalog::value(char *group, char *name)
 		desc = grp->head;
 
 		while (desc) {
-			if (!strncmp(name, desc->name, sizeof(desc->name))) {
+			if (!strncmp(name, desc->name, strlen(desc->name))) {
 				return desc->value;
 			}
 			desc = (desc_t*)desc->next();
@@ -305,7 +305,7 @@ char *ccatalog::value(void *handle, char *name)
                 desc = grp->head;
 
                 while (desc) {
-                        if (!strncmp(name, desc->name, sizeof(desc->name))) {
+                        if (!strncmp(name, desc->name, strlen(desc->name))) {
                                 return desc->value;
                         }
                         desc = (desc_t*)desc->next();
