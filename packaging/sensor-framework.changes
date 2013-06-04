@@ -1,3 +1,6 @@
+* Tue Jun 04 2013 Timo Toikkanen <timo.toikkanen@ixonos.com> submit/tizen_2.2/20130604.080218@2101c98
+- Version number update 0.2.30 to 0.2.31
+
 * Tue Jun 04 2013 Timo Toikkanen <timo.toikkanen@ixonos.com> submit/tizen_2.2/20130604.080218@69ee0e8
 - Partial fix for TZSP-5314 Motion sensor enable for PR3 device
 
