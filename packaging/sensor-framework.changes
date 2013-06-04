@@ -1,3 +1,6 @@
+* Tue Jun 04 2013 Timo Toikkanen <timo.toikkanen@ixonos.com> submit/tizen_2.2/20130604.080218@69ee0e8
+- Partial fix for TZSP-5314 Motion sensor enable for PR3 device
+
 * Tue Feb 19 2013 Telle-Tiia Pitkanen <telle-tiia.pitkanen@ixonos.com> accepted/trunk/20130131.000522@e0551a5
 - PR3 required changes added.
 - Add assign tag in manifest file

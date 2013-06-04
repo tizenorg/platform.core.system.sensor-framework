@@ -32,8 +32,9 @@ endif()
 
 add_subdirectory(server)
 if("${PLATFORM_ARCH}" MATCHES "arch_ia")
-	CONFIGURE_FILE(sf_sensor.conf.in sf_sensor.conf @ONLY)
-	CONFIGURE_FILE(sf_filter.conf.in sf_filter.conf @ONLY)
+	file(WRITE empty.conf " ")
+	CONFIGURE_FILE(empty.conf sf_sensor.conf @ONLY)
+	CONFIGURE_FILE(empty.conf sf_filter.conf @ONLY)
 	CONFIGURE_FILE(sf_processor-mfld-blackbay.conf sf_processor.conf @ONLY)
 	CONFIGURE_FILE(sf_data_stream-mfld-blackbay.conf sf_data_stream.conf @ONLY)
 	install(FILES
