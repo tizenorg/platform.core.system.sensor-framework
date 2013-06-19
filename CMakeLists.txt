@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 project(sensor_framework_main CXX)
 
+include(TizenCommon)
 include(FindPkgConfig)
-pkg_check_modules(rpkgs REQUIRED sf_common vconf heynoti)
+pkg_check_modules(rpkgs REQUIRED sf_common vconf heynoti libsystemd-daemon)
 add_definitions(${rpkgs_CFLAGS})
 
 # to install pkgconfig setup file.
@@ -71,3 +72,10 @@ if("${PLATFORM_ARCH}" MATCHES "arch_sdk")
 endif()
 
 install(PROGRAMS sfsvc DESTINATION /etc/rc.d/init.d)
+
+####################### systemd files installation ############################
+INSTALL(FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/systemd/sensor-framework.service
+    ${CMAKE_CURRENT_SOURCE_DIR}/systemd/sensor-framework.socket
+    DESTINATION ${LIB_INSTALL_DIR}/systemd/system)
+

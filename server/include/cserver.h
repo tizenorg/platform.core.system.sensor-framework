@@ -38,6 +38,9 @@ public:
 	void sf_main_loop_stop(void);
 
 private:
+	int get_systemd_socket(const char *name);
+
+private:
 
 	struct client_ctx_t {
 		ctype *module;

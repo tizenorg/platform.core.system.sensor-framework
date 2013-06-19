@@ -22,7 +22,7 @@
 
 
 
-
+#include <systemd/sd-daemon.h>
 #include <stdio.h>
 #include <errno.h>
 #include <dlfcn.h>
@@ -1155,15 +1155,52 @@ void cserver::sf_main_loop_stop(void)
 	}
 }
 
+int cserver::get_systemd_socket(const char *name)
+{
+	int type = SOCK_STREAM;
+	int listening = 1;
+	size_t length = 0;
+	int fd = -1;
+	int n;
+
+	// Gets number of created by systemd file descriptors that represent open sockets.
+	n = sd_listen_fds(1);
+
+	// Check open sockets count (must be 1)
+	if (n != 1)
+		return -1;
+
+	// File descriptor calculation
+	fd = SD_LISTEN_FDS_START  + 0;
+
+	// File descriptor veryfication.
+	if(sd_is_socket_unix(fd, type, listening, name, length) > 0)
+		return fd;
+
+	// No proper socket or error
+	return -1;
+}
+
+
 void cserver::sf_main_loop(void)
 {
 	csock *ipc = NULL;
+	int sockfd = -1;
 	int fd = -1;
 
 	g_mainloop = g_main_loop_new(NULL, FALSE);
 
 	try {
-		ipc = new csock((char*)STR_SF_IPC_SOCKET, csock::SOCK_TCP|csock::SOCK_WORKER, 0, 1);
+		// Get systemd socket
+		sockfd = cserver::get_systemd_socket(STR_SF_IPC_SOCKET);
+
+		if (sockfd >= 0) {
+			// Systemd socket exists - short csock object setup
+			ipc = new csock(sockfd, csock::SOCK_TCP|csock::SOCK_WORKER);
+		} else {
+			// No systemd socket - standard csock object setup
+			ipc = new csock((char*)STR_SF_IPC_SOCKET, csock::SOCK_TCP|csock::SOCK_WORKER, 0, 1);
+		}
 	} catch (int ErrNo) {
 		ERR("ipc class create fail , errno : %d , errstr : %s\n",ErrNo, strerror(ErrNo));		
 		return ;
@@ -1199,6 +1236,9 @@ void cserver::sf_main_loop(void)
 		close(fd);
 		fd = -1;
 	}
+
+	// Notification to systemd
+	sd_notify(0, "READY=1");
 
 	g_main_loop_run(g_mainloop);
 	g_main_loop_unref(g_mainloop);	

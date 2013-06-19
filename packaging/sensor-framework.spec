@@ -6,7 +6,6 @@ Release:    1
 Group:      Framework/system
 License:    Apache License, Version 2.0
 Source0:    %{name}-%{version}.tar.gz
-Source1:    sensor-framework.service
 Source1001: 	sensor-framework.manifest
 
 %ifarch %{arm}
@@ -29,6 +28,8 @@ BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(sf_common)
 BuildRequires:  pkgconfig(vconf)
 BuildRequires:  pkgconfig(heynoti)
+BuildRequires:  pkgconfig(libsystemd-daemon)
+%{?systemd_requires}
 
 %description
 Sensor framework
@@ -49,8 +50,9 @@ mkdir -p %{buildroot}/usr/share/license
 cp LICENSE %{buildroot}/usr/share/license/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
-install -m 0644 %SOURCE1 %{buildroot}%{_libdir}/systemd/system/
+mkdir -p %{buildroot}%{_libdir}/systemd/system/sockets.target.wants
 ln -s ../sensor-framework.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/sensor-framework.service
+ln -s ../sensor-framework.socket  %{buildroot}%{_libdir}/systemd/system/sockets.target.wants/sensor-framework.socket
 
 # FIXME: remove initscripts after we start using systemd
 mkdir -p %{buildroot}%{_sysconfdir}/rc.d/rc3.d
@@ -86,8 +88,10 @@ vconftool set -t int memory/private/sensor/80001 0 -i
 vconftool set -t int memory/private/sensor/80002 0 -i
 vconftool set -t int memory/private/sensor/poweroff 0 -i
 
+systemctl daemon-reload
+
 %files
-%manifest %{name}.manifest
+%manifest sensor-framework.manifest
 %attr(0755,root,root) %{_sysconfdir}/rc.d/init.d/sfsvc
 %{_sysconfdir}/rc.d/rc3.d/S40sfsvc
 %{_sysconfdir}/rc.d/rc4.d/S40sfsvc
@@ -97,6 +101,8 @@ vconftool set -t int memory/private/sensor/poweroff 0 -i
 %attr(0644,root,root)/usr/etc/sf_processor.conf
 %attr(0644,root,root)/usr/etc/sf_sensor.conf
 %{_libdir}/systemd/system/sensor-framework.service
+%{_libdir}/systemd/system/sensor-framework.socket
 %{_libdir}/systemd/system/multi-user.target.wants/sensor-framework.service
+%{_libdir}/systemd/system/sockets.target.wants/sensor-framework.socket
 /usr/share/license/%{name}
 

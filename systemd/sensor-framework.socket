@@ -1,0 +1,8 @@
+[Unit]
+Description=Sensor Framework socket
+
+[Socket]
+ListenStream=/tmp/sf_socket
+SocketMode=0777
+PassCredentials=yes
+Accept=false
