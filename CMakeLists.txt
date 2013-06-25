@@ -71,8 +71,6 @@ if("${PLATFORM_ARCH}" MATCHES "arch_sdk")
 		DESTINATION etc)
 endif()
 
-install(PROGRAMS sfsvc DESTINATION /etc/rc.d/init.d)
-
 ####################### systemd files installation ############################
 INSTALL(FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/systemd/sensor-framework.service
