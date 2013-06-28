@@ -7,6 +7,7 @@ Group:      Framework/system
 License:    Apache License, Version 2.0
 Source0:    %{name}-%{version}.tar.gz
 Source1:    sensor-framework.service
+Source1001: 	sensor-framework.manifest
 
 %ifarch %{arm}
   #arm build
@@ -34,6 +35,7 @@ Sensor framework
 
 %prep
 %setup -q
+cp %{SOURCE1001} .
 
 %build
 cmake . -DCMAKE_INSTALL_PREFIX=/usr -DPLATFORM_ARCH=%{_archtype}
@@ -85,7 +87,7 @@ vconftool set -t int memory/private/sensor/80002 0 -i
 vconftool set -t int memory/private/sensor/poweroff 0 -i
 
 %files
-%manifest sensor-framework.manifest
+%manifest %{name}.manifest
 %attr(0755,root,root) %{_sysconfdir}/rc.d/init.d/sfsvc
 %{_sysconfdir}/rc.d/rc3.d/S40sfsvc
 %{_sysconfdir}/rc.d/rc4.d/S40sfsvc
