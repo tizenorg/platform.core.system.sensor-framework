@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
 			filter_catalog = new cfilter_catalog;
 		} catch (...) {
 			ERR("cfilter_catalog class create fail\n");
-			if (sensor_catalog) delete sensor_catalog;
+			delete sensor_catalog;
 			if (processor_catalog) delete processor_catalog;
 			return -1;
 		}
@@ -343,7 +343,7 @@ int main(int argc, char *argv[])
 		if (filter_catalog->create(dstream_file) == false) {
 			ERR("filter_catalog create fail\n");
 			delete filter_catalog;
-			if (sensor_catalog) delete sensor_catalog;
+			delete sensor_catalog;
 			if (processor_catalog) delete processor_catalog;
 			return -1;
 		}
@@ -352,8 +352,8 @@ int main(int argc, char *argv[])
 			processor_catalog = new cprocessor_catalog;
 		} catch (...) {
 			ERR("cprocessor_catalog class create fail\n");
-			if (sensor_catalog) delete sensor_catalog;
-			if (filter_catalog) delete filter_catalog;
+			delete sensor_catalog;
+			delete filter_catalog;
 			return -1;
 		}
 
@@ -363,8 +363,8 @@ int main(int argc, char *argv[])
 		if (processor_catalog->create(dstream_file) == false) {
 			ERR("processor_catalog create fail\n");
 			delete processor_catalog;
-			if (sensor_catalog) delete sensor_catalog;
-			if (filter_catalog) delete filter_catalog;
+			delete sensor_catalog;
+			delete filter_catalog;
 			return -1;
 		}
 
