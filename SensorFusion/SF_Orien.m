@@ -14,7 +14,7 @@
 % See the License for the specific language governing permissions and
 % limitations under the License.
 
-% Sensor Fusion Implementation - Orientation Estimation
+% Sensor Fusion Implementation - Orientation Estimation 
 %
 % - Orientation Estimation using Gyroscope as the driving system and Accelerometer+Geo-Magnetic Sensors as Aiding System.
 % - Quaternion based approach
@@ -23,7 +23,7 @@
 
 clear
 
-LOW_PASS_FILTERING_ON = 0;
+LOW_PASS_FILTERING_ON = 1;
 
 Max_Range_Accel = 39.203407; Min_Range_Accel = -39.204006; Res_Accel = 0.000598;
 Max_Range_Gyro = 1146.862549; Min_Range_Gyro = -1146.880005; Res_Gyro = 0.017500;
@@ -41,10 +41,21 @@ Bias_Gx = -5.3539;
 Bias_Gy = 0.24325;
 Bias_Gz = 2.3391;
 
-BUFFER_SIZE = 1065;
+BUFFER_SIZE = 1095;
 MOVING_AVERAGE_WINDOW_LENGTH = 20;
-RAD = 57.2957795;
+RAD2DEG = 57.2957795;
+DEG2RAD = 0.0174532925;
 US2S =  1.0 / 1000000.0;
+
+% Gyro Types
+% Systron-donner "Horizon"
+ZigmaW = 0.05 * DEG2RAD; %deg/s 
+TauW = 1000; %secs 
+% Crossbow DMU-6X
+%ZigmaW = 0.05 * DEG2RAD; %deg/s 
+%TauW = 300; %secs 
+%FOGs (KVH Autogyro and Crossbow DMU-FOG)
+%ZigmaW = 0; %deg/s  
 
 % get accel x,y,z axis data from stored file
 Ax = (((dlmread("sensor_data/100ms/roll_pitch_yaw/accel.txt")(:,1))') - Bias_Ax)(1:BUFFER_SIZE);
@@ -69,9 +80,12 @@ My = (((dlmread("sensor_data/100ms/roll_pitch_yaw/magnetic.txt")(:,2))'))(1:BUFF
 Mz = (((dlmread("sensor_data/100ms/roll_pitch_yaw/magnetic.txt")(:,3))'))(1:BUFFER_SIZE);
 MTime = ((dlmread("sensor_data/100ms/roll_pitch_yaw/magnetic.txt")(:,4))');
 
+% Gyroscope Bias Variables
+Bx = 0; By = 0; Bz = 0;
+
 % 1st order smoothening filter
-b = [0.9999   0 ];
-a = [1.0000000  0.1 ];
+b = [0.98   0 ];
+a = [1.0000000  0.02 ];
 
 % initialize filter output variables to zero
 filt_Ax = zeros(1,BUFFER_SIZE);
@@ -94,71 +108,45 @@ mag_x = zeros(1,BUFFER_SIZE);
 mag_y = zeros(1,BUFFER_SIZE);
 mag_z = zeros(1,BUFFER_SIZE);
 
-UA = zeros(1,BUFFER_SIZE);
-Corrected_Az = zeros(1,BUFFER_SIZE);
-
 % User Acceleration mean and Variance
-mean_UA = zeros(1,BUFFER_SIZE);
 A_T = zeros(1,BUFFER_SIZE);
 G_T = zeros(1,BUFFER_SIZE);
 M_T = zeros(1,BUFFER_SIZE);
-var_UA = zeros(1,BUFFER_SIZE);
-var_Ax = zeros(1,BUFFER_SIZE);
-var_Ay = zeros(1,BUFFER_SIZE);
-var_Az = zeros(1,BUFFER_SIZE);
+var_roll = zeros(1,BUFFER_SIZE);
+var_pitch = zeros(1,BUFFER_SIZE);
+var_yaw = zeros(1,BUFFER_SIZE);
 var_Gx = zeros(1,BUFFER_SIZE);
 var_Gy = zeros(1,BUFFER_SIZE);
 var_Gz = zeros(1,BUFFER_SIZE);
-var_Mx = zeros(1,BUFFER_SIZE);
-var_My = zeros(1,BUFFER_SIZE);
-var_Mz = zeros(1,BUFFER_SIZE);
 
-mean_Roll = zeros(1,BUFFER_SIZE);
-mean_Pitch = zeros(1,BUFFER_SIZE);
-mean_Yaw = zeros(1,BUFFER_SIZE);
-var_Roll = zeros(1,BUFFER_SIZE);
-var_Pitch = zeros(1,BUFFER_SIZE);
-var_Yaw = zeros(1,BUFFER_SIZE);
+roll = zeros(1,BUFFER_SIZE);
+pitch = zeros(1,BUFFER_SIZE);
+yaw = zeros(1,BUFFER_SIZE);
 quat_driv = zeros(BUFFER_SIZE,4);
 quat_aid = zeros(BUFFER_SIZE,4);
 quat_error = zeros(BUFFER_SIZE,4);
 euler = zeros(BUFFER_SIZE,3);
 Ro = zeros(3, 3, BUFFER_SIZE);
 
-% Gyroscope Bias Variables
-Bx = 0; By = 0; Bz = 0;
-
 % system covariance matrix
-Q=[ 1.1 0  0   0 0 0;
-	0  1.1 0   0 0 0;
-	0  0   1.1 0 0 0;
-	0  0   0   0 0 0;
-	0  0   0   0 0 0;
-	0  0   0   0 0 0;];
+Q = zeros(6,6);
 
 % measurement covariance matrix
-R=[ 1.01 0    0    0    0    0;
-	0    1.01 0    0    0    0;
-	0    0    1.01 0    0    0;
-	0    0    0    1.01 0    0;
-	0    0    0    0    1.01 0;
-	0    0    0    0    0    1.01;];
-
-%R=[ 1.01 0    0;
-%	0    1.01 0;
-%	0    0    1.01;];
+R = zeros(6,6);
 	
 A_T(1) = 100000;
 G_T(1) = 100000;
 M_T(1) = 100000;
 	
 acc_e = [0.0;0.0;1.0]; % gravity vector in earth frame
-mag_e = [0.0;1.0;0.0]; % magnetic field vector in eart frame	
+mag_e = [0.0;1.0;0.0]; % magnetic field vector in earth frame	
 	
 H = [eye(3) zeros(3,3); zeros(3,6)];
 x = zeros(6,BUFFER_SIZE);
 e = zeros(1,6);
 P = 1 * eye(6);% state covariance matrix
+
+quat_driv(1,:) = [1 0 0 0];
 
 % first order filtering
 for i = 1:BUFFER_SIZE
@@ -214,48 +202,15 @@ for i = 1:BUFFER_SIZE
 	
 	UA(i) = sqrt(acc_x(i)^2 + acc_y(i)^2 + acc_z(i)^2) - GRAVITY;
 	
-	if i <= MOVING_AVERAGE_WINDOW_LENGTH
-		mean_UA(i) = UA(i);
-		var_UA(i) = NON_ZERO_VAL;
-		var_Ax(i) = NON_ZERO_VAL;
-		var_Ay(i) = NON_ZERO_VAL;
-		var_Az(i) = NON_ZERO_VAL;
-		var_Gx(i) = NON_ZERO_VAL;
-		var_Gy(i) = NON_ZERO_VAL;
-		var_Gz(i) = NON_ZERO_VAL;
-		var_Mx(i) = NON_ZERO_VAL;
-		var_My(i) = NON_ZERO_VAL;
-		var_Mz(i) = NON_ZERO_VAL;
-	else
-		mean_UA(i) = mean(UA((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-		var_UA(i) = var(UA((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-		var_Ax(i) = var(acc_x((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-		var_Ay(i) = var(acc_y((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-		var_Az(i) = var(acc_z((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-		var_Gx(i) = var(gyr_x((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-		var_Gy(i) = var(gyr_y((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-		var_Gz(i) = var(gyr_z((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-		var_Mx(i) = var(mag_x((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-		var_My(i) = var(mag_y((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-		var_Mz(i) = var(mag_z((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
-	end
-	if i > 1
-		A_T(i) = ATime(i) - ATime(i-1);
-		G_T(i) = GTime(i) - GTime(i-1);
-		M_T(i) = MTime(i) - MTime(i-1);
-	end
-	
-	dt = G_T(i) * US2S;
-	
-	gyr_x(i) = gyr_x(i) + Bx;
-	gyr_y(i) = gyr_y(i) + By;
-	gyr_z(i) = gyr_z(i) + Bz;
+	gyr_x(i) = gyr_x(i) - Bx;
+	gyr_y(i) = gyr_y(i) - By;
+	gyr_z(i) = gyr_z(i) - Bz;
 	
 	% Aiding System (Accelerometer + Geomagnetic) quaternion generation
 	% gravity vector in body frame
 	acc_b =[acc_x(i);acc_y(i);acc_z(i)]; 
 	% magnetic field vector in body frame
-	mag_b =[mag_x(i);mag_y(i);mag_z(i)]; 
+	mag_b =[mag_x(i);mag_y(i);mag_z(i)];
 
 	% compute measurement quaternion with TRIAD algorithm
 	acc_b_x_mag_b = cross(acc_b,mag_b);
@@ -265,6 +220,43 @@ for i = 1:BUFFER_SIZE
 	Rot_m = M_e * M_b'; 	
 	quat_aid(i,:) = RotMat2Quat(Rot_m);
 	
+	euler = Quat2Euler(quat_aid(i,:));
+	roll(i) = euler(1);
+	pitch(i) = euler(2);
+	yaw(i) = euler(3);
+	
+	if i <= MOVING_AVERAGE_WINDOW_LENGTH
+		var_Gx(i) = NON_ZERO_VAL;
+		var_Gy(i) = NON_ZERO_VAL;
+		var_Gz(i) = NON_ZERO_VAL;
+		var_roll(i) = NON_ZERO_VAL;
+		var_pitch(i) = NON_ZERO_VAL;
+		var_yaw(i) = NON_ZERO_VAL;
+	else
+		var_Gx(i) = var(gyr_x((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
+		var_Gy(i) = var(gyr_y((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
+		var_Gz(i) = var(gyr_z((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
+		var_roll(i) = var(roll((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
+		var_pitch(i) = var(pitch((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
+		var_yaw(i) = var(yaw((i-MOVING_AVERAGE_WINDOW_LENGTH):i));
+	end
+	if i > 1
+		A_T(i) = ATime(i) - ATime(i-1);
+		G_T(i) = GTime(i) - GTime(i-1);
+		M_T(i) = MTime(i) - MTime(i-1);
+	end
+	
+	dt = G_T(i) * US2S;
+	
+	Qwn = [var_Gx(i) 0 0;0 var_Gy(i) 0;0 0 var_Gz(i);];
+	Qwb = (2 * (ZigmaW^2) / TauW) * eye(3);
+	
+	% Process Noise Covariance
+	Q = [Qwn zeros(3,3);zeros(3,3) Qwb];
+	
+	% Measurement Noise Covariance
+	R = [[var_roll(i) 0 0;0 var_pitch(i) 0;0 0 var_yaw(i)] zeros(3,3); zeros(3,3) zeros(3,3)];
+	
 	% initialization for q
 	if i == 1
 		q = quat_aid(i,:);
@@ -272,10 +264,7 @@ for i = 1:BUFFER_SIZE
 	
 	q_t = [q(2) q(3) q(4)]';
 	Rtan = (q(1)^2 - q_t'*q_t)*eye(3) + 2*q_t*q_t' - 2*q(1)*[0 -q(4) q(3);q(4) 0 -q(2);-q(3) q(2) 0];
-	%F = [[0 gyr_z(i) -gyr_y(i);-gyr_z(i) 0 gyr_x(i);gyr_y(i) -gyr_x(i) 0] Rtan;  eye(3) ((-1/dt) * eye(3))];
-	F = [[0 gyr_z(i) -gyr_y(i);-gyr_z(i) 0 gyr_x(i);gyr_y(i) -gyr_x(i) 0] Rtan;  zeros(3,6)];
-	%F = [[0 gyr_z(i) -gyr_y(i);-gyr_z(i) 0 gyr_x(i);gyr_y(i) -gyr_x(i) 0] Rtan;  zeros(3,3) ((1/dt) * eye(3))];
-	%F = eye(6); 
+	F = [[0 gyr_z(i) -gyr_y(i);-gyr_z(i) 0 gyr_x(i);gyr_y(i) -gyr_x(i) 0] Rtan; zeros(3,3) (-(1/TauW) * eye(3))];
 
 	% Time Update
 	if i > 1
@@ -306,9 +295,9 @@ for i = 1:BUFFER_SIZE
 	q = QuatProd(quat_driv(i,:), [1 x1 x2 x3]) * PI;
 	q = q / norm(q);
 	
-	By = x(4,i);
-	Bx = x(5,i);
-	Bz = x(6,i);
+	Bx = Bx + x(4,i);
+	By = By + x(5,i);
+	Bz = Bz + x(6,i);
 
 	if i > 1
 		e = [x1 x2 x3 x(4,i) x(5,i) x(6,i)];
@@ -320,24 +309,24 @@ for i = 1:BUFFER_SIZE
 		% update state vector
 		x(:,i) = x(:,i) + K(:,j) * e(j);
 		% update covariance matrix
-		P = ((eye(6) - (K(:,j) * H(j,:))) * P * (eye(6) - (K(:,j) * H(j,:)))') + (K(:,j) * R(j,j) * K(:,j)');
+		P = (eye(6) - (K(:,j) * H(j,:))) * P;
 	end
 end
 
-euler = Quat2Euler(quat_aid);
-roll = euler(:,1)' * RAD;
-pitch = euler(:,2)' * RAD;
-yaw = euler(:,3)' * RAD;
+
+roll = roll * RAD2DEG;
+pitch = pitch * RAD2DEG;
+yaw = yaw * RAD2DEG;
 
 euler = Quat2Euler(quat_driv);
-phi = euler(:,1)' * RAD;
-theta = euler(:,2)' * RAD;
-psi = -euler(:,3)' * RAD;
+phi = euler(:,1)' * RAD2DEG;
+theta = euler(:,2)' * RAD2DEG;
+psi = -euler(:,3)' * RAD2DEG;
 
 euler = Quat2Euler(quat_error);
-roll_e = euler(:,1)' * RAD;
-pitch_e = euler(:,2)' * RAD;
-yaw_e = euler(:,3)' * RAD;
+roll_e = euler(:,1)' * RAD2DEG;
+pitch_e = euler(:,2)' * RAD2DEG;
+yaw_e = euler(:,3)' * RAD2DEG;
 
 % Plot results
 close all
@@ -498,3 +487,4 @@ grid on;
 p2 = plot(1:BUFFER_SIZE,filt_Mz(1,1:BUFFER_SIZE),'b');
 title(['Magnetometer Z-Axis Plot']);
 legend([p1 p2],'input signal','low-pass filtered signal');
+
