@@ -20,8 +20,9 @@
 % - Quaternion based approach
 % - Estimation and correction of Euler errors and bias errors for gyroscope using Kalman filter
 
-
+addpath('lib'); 
 clear
+clc
 
 LOW_PASS_FILTERING_ON = 1;
 
@@ -58,16 +59,16 @@ TauW = 1000; %secs
 %ZigmaW = 0; %deg/s  
 
 % get accel x,y,z axis data from stored file
-Ax = (((dlmread("sensor_data/100ms/roll_pitch_yaw/accel.txt")(:,1))') - Bias_Ax)(1:BUFFER_SIZE);
-Ay = (((dlmread("sensor_data/100ms/roll_pitch_yaw/accel.txt")(:,2))') - Bias_Ay)(1:BUFFER_SIZE);
-Az = (((dlmread("sensor_data/100ms/roll_pitch_yaw/accel.txt")(:,3))') - Bias_Az)(1:BUFFER_SIZE);
-ATime = ((dlmread("sensor_data/100ms/roll_pitch_yaw/accel.txt")(:,4))');
+Ax = (((dlmread("data/100ms/roll_pitch_yaw/accel.txt")(:,1))') - Bias_Ax)(1:BUFFER_SIZE);
+Ay = (((dlmread("data/100ms/roll_pitch_yaw/accel.txt")(:,2))') - Bias_Ay)(1:BUFFER_SIZE);
+Az = (((dlmread("data/100ms/roll_pitch_yaw/accel.txt")(:,3))') - Bias_Az)(1:BUFFER_SIZE);
+ATime = ((dlmread("data/100ms/roll_pitch_yaw/accel.txt")(:,4))');
 
 % get gyro x,y,z axis data from stored file
-Gx = (((dlmread("sensor_data/100ms/roll_pitch_yaw/gyro.txt")(:,1))') - Bias_Gx)(1:BUFFER_SIZE);
-Gy = (((dlmread("sensor_data/100ms/roll_pitch_yaw/gyro.txt")(:,2))') - Bias_Gy)(1:BUFFER_SIZE);
-Gz = (((dlmread("sensor_data/100ms/roll_pitch_yaw/gyro.txt")(:,3))') - Bias_Gz)(1:BUFFER_SIZE);
-GTime = ((dlmread("sensor_data/100ms/roll_pitch_yaw/gyro.txt")(:,4))');
+Gx = (((dlmread("data/100ms/roll_pitch_yaw/gyro.txt")(:,1))') - Bias_Gx)(1:BUFFER_SIZE);
+Gy = (((dlmread("data/100ms/roll_pitch_yaw/gyro.txt")(:,2))') - Bias_Gy)(1:BUFFER_SIZE);
+Gz = (((dlmread("data/100ms/roll_pitch_yaw/gyro.txt")(:,3))') - Bias_Gz)(1:BUFFER_SIZE);
+GTime = ((dlmread("data/100ms/roll_pitch_yaw/gyro.txt")(:,4))');
 
 scale_Gyro = 575;
 Gx = Gx/scale_Gyro;
@@ -75,10 +76,10 @@ Gy = Gy/scale_Gyro;
 Gz = Gz/scale_Gyro;
 
 % get magnetometer x,y,z axis data from stored file
-Mx = (((dlmread("sensor_data/100ms/roll_pitch_yaw/magnetic.txt")(:,1))'))(1:BUFFER_SIZE);
-My = (((dlmread("sensor_data/100ms/roll_pitch_yaw/magnetic.txt")(:,2))'))(1:BUFFER_SIZE);
-Mz = (((dlmread("sensor_data/100ms/roll_pitch_yaw/magnetic.txt")(:,3))'))(1:BUFFER_SIZE);
-MTime = ((dlmread("sensor_data/100ms/roll_pitch_yaw/magnetic.txt")(:,4))');
+Mx = (((dlmread("data/100ms/roll_pitch_yaw/magnetic.txt")(:,1))'))(1:BUFFER_SIZE);
+My = (((dlmread("data/100ms/roll_pitch_yaw/magnetic.txt")(:,2))'))(1:BUFFER_SIZE);
+Mz = (((dlmread("data/100ms/roll_pitch_yaw/magnetic.txt")(:,3))'))(1:BUFFER_SIZE);
+MTime = ((dlmread("data/100ms/roll_pitch_yaw/magnetic.txt")(:,4))');
 
 % Gyroscope Bias Variables
 Bx = 0; By = 0; Bz = 0;
